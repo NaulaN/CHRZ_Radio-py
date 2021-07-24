@@ -1,0 +1,80 @@
+{
+    "838862631284506705": {
+        "roles_index": {
+            "861576434337972234": "live",
+            "861576815835742208": "videos",
+            "861575819894063125": "updates",
+            "861577472960757791": "helper",
+            "861573716505002024": "members",
+            "861577270900686868": "announcements",
+            "861576205508411440": "update_escardoc"
+        },
+        "attribute_index": {
+            "live": 852844014130429983,
+            "videos": 852844603404582913,
+            "updates": 857914948821581904,
+            "helper": 850052699499790397,
+            "members": 850050735186116668,
+            "announcements": 858744442462666753,
+            "update_escardoc": 860502162957795369
+        },
+        "ids": {
+            "id_channel_bot": 850782528394625085,
+            "id_channel_members": 852576991504105514,
+            "id_channel_lvlup": 843510200610062376,
+            "id_channel_roles": 857914202979303434,
+            "id_channel_rules": 839035648991297567,
+            "id_channel_welcome": 841727088951820308,
+            "id_channel_videos": 839041084919119923,
+            "id_channel_live": 839041020566044743,
+            "id_channel_minecraft": 858650084408033290,
+            "id_vocal_channel_create": 868456252685045760,
+            "id_role_default": 850050735186116668,
+            "id_role_helper": 850052699499790397,
+            "id_role_regular": 850400074264608768,
+            "id_role_notify_videos": 852844603404582913,
+            "id_role_notify_live": 852844014130429983,
+            "id_role_notify_updates": 857914948821581904,
+            "id_role_notify_update_escarbor": 860502162957795369,
+            "id_role_announcements": 858744442462666753,
+            "id_role_booster": 854036500211040256,
+            "id_msg_role_live": 861576434337972234,
+            "id_msg_role_videos": 861576815835742208,
+            "id_msg_role_updates": 861575819894063125,
+            "id_msg_role_helper": 861577472960757791,
+            "id_msg_role_members": 861573716505002024,
+            "id_msg_role_announcements": 861577270900686868,
+            "id_msg_role_update_escardoc": 861576205508411440
+        },
+        "id_channel_python": 839037847939973140,
+        "id_channel_commandes": 859888888944263168,
+        "id_channel_developers": 853332766086922250,
+        "message_radio_id": 867436604867084290,
+        "channel_radio": 867173777485725706
+    },
+    "846458770963169360": {
+        "roles_index": {
+            "860279444655833088": "updates",
+            "860278999811883008": "announcements",
+            "860481606317768725": "actuality"
+        },
+        "attribute_index": {
+            "updates": 859420905393618954,
+            "announcements": 859421252099637269,
+            "actuality": 859421483524423690
+        },
+        "ids": {
+            "id_role_default": 846461020896886815,
+            "id_role_announcements": 859421252099637269,
+            "id_role_updates": 859420905393618954,
+            "id_role_actuality": 859421483524423690,
+            "id_channel_members": 856963764019527690,
+            "id_channel_lvlup": 846464519823949844,
+            "id_channel_rules": 846460888269062154,
+            "id_channel_roles": 858102798389084210,
+            "id_msg_role_announcements": 860191981765132359,
+            "id_msg_role_updates": 860192197110136852,
+            "id_msg_role_actuality": 860481606317768725
+        }
+    }
+}
