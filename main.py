@@ -1,5 +1,7 @@
 from discord import Intents, utils, ActivityType, Activity, Status
 from discord.ext import commands
+
+from commands.help import HelpCommand
 from commands.ping import PingCommand
 from commands.set_radio import SetRadioCommand
 from radio import Radio
@@ -22,7 +24,8 @@ config.read( 'res/cfg.ini', encoding= 'UTF-8' )
 class Bot(commands.Bot):
 
 	def __init__(self):
-		commands.Bot.__init__(self, command_prefix= '.', intents= i)
+		help_command = HelpCommand(self)
+		commands.Bot.__init__(self, command_prefix= '.', intents= i, help_command= help_command.commands_list)
 
 		self.version = config["BOT"]["version"]
 
