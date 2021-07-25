@@ -143,7 +143,7 @@ class Radio(commands.Cog):
 		await self.bot.wait_until_ready()
 		try:
 			if self.all_voices[self.vocalChannel.id]["joined"]:
-				name_act = [f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}", self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]]
+				name_act = [f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}", str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).removesuffix('.mp3')]
 				if self.n >= 2:
 					self.n = 0
 				await self.bot.change_activity(name_act[self.n], 'online')

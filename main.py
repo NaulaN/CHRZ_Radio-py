@@ -1,5 +1,4 @@
-import discord
-from discord import Intents, utils, ActivityType, Activity, Status
+from discord import Intents, utils, ActivityType, Activity
 from discord.ext import commands
 from commands.help import Help
 from commands.ping import PingCommand
