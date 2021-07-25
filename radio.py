@@ -1,4 +1,4 @@
-from discord import FFmpegPCMAudio, utils, Status
+from discord import FFmpegPCMAudio, utils
 from discord.ext import commands
 from discord.ext.tasks import loop
 
@@ -13,6 +13,8 @@ class Radio(commands.Cog):
 		self.template = {"choice_musique": 0, "joined": False, "paused": False, "resume": True, "stopped": False, "random": False}
 		self.all_voices = {}
 		self.all_musics = os.listdir(f'{os.getcwd()}/Music')
+
+		self.n = 0
 
 	@staticmethod
 	def play_music(music, voice):
@@ -39,8 +41,6 @@ class Radio(commands.Cog):
 			# leave vocal
 			await guild.voice_client.disconnect()
 			self.all_voices[self.vocalChannel.id]["joined"] = False
-			# Display "is not used"
-			await self.bot.change_activity(f"nothing 😥 | {self.bot.version}", Status.do_not_disturb)
 			self.cancel_loop()
 
 	async def join(self, event, message):
@@ -53,10 +53,8 @@ class Radio(commands.Cog):
 		# set random value for first start of musique
 		random_choice = random.randint(0, len(self.all_musics) - 1)
 		self.all_voices[self.vocalChannel.id]["choice_musique"] = random_choice
-
 		self.play_music(self.all_musics[random_choice], self.voice)
-		# Display "is used"
-		await self.bot.change_activity(f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}", Status.online)
+		await self.bot.change_activity(f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}", 'online')
 		self.start_loop()
 
 	async def next_music(self, event):
@@ -94,6 +92,10 @@ class Radio(commands.Cog):
 			self.all_voices[self.vocalChannel.id]["random"] = False
 
 	@commands.Cog.listener()
+	async def on_ready(self):
+		await self.change_activity_music.start()
+
+	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, event):
 		if event.message_id == self.bot.data[str(event.guild_id)]['message_radio_id']:
 			guild = utils.get(self.bot.guilds, id= event.guild_id)
@@ -120,10 +122,6 @@ class Radio(commands.Cog):
 		# Radio message
 		await self.remove_random_music_selection(event) if event.message_id == self.bot.data[str(event.guild_id)]['message_radio_id'] else None
 
-	@commands.Cog.listener()
-	async def on_ready(self):
-		await self.check_inactive.start()
-
 	@loop(seconds= 3)
 	async def change_musique_loop(self):
 		await self.bot.wait_until_ready()
@@ -132,41 +130,35 @@ class Radio(commands.Cog):
 		self.all_voices[self.vocalChannel.id]["resume"] = self.voice.is_playing()
 
 		# Changing automatically the music if the previous music is finished
-		if self.all_voices[self.vocalChannel.id]["resume"] is True:
-			if self.voice.is_playing() is False:
-				if self.all_voices[self.vocalChannel.id]["random"] is False:
-					self.change_music('+')
-				else:
-					self.all_voices[self.vocalChannel.id]["choice_musique"] = random.randint(0, len(self.all_musics) - 1)
-				self.sources = FFmpegPCMAudio(f'./Music/{self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]}')
-				self.voice.play(self.sources)
+		if self.voice.is_playing() is False:
+			if self.all_voices[self.vocalChannel.id]["random"] is False:
+				self.change_music('+')
+			else:
+				self.all_voices[self.vocalChannel.id]["choice_musique"] = random.randint(0, len(self.all_musics) - 1)
+			self.sources = FFmpegPCMAudio(f'./Music/{self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]}')
+			self.voice.play(self.sources)
+
+	@loop(minutes= 1)
+	async def change_activity_music(self):
+		await self.bot.wait_until_ready()
+		try:
+			if self.all_voices[self.vocalChannel.id]["joined"]:
+				name_act = [f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}", self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]]
+				if self.n >= 2:
+					self.n = 0
+				await self.bot.change_activity(name_act[self.n], 'online')
+				self.n += 1
+		except AttributeError:
+			await self.bot.change_activity(f"nothing | {self.bot.version}")
 
 	@loop(minutes= 1)
 	async def check_inactive(self):
 		await self.bot.wait_until_ready()
-
 		for guild in self.bot.guilds:
-			textChannel = utils.get(guild.channels, id= self.bot.data[guild.id]["channel_radio"])
 			member = utils.get(guild.members, id= self.bot.bot_id)
-			message = textChannel.get_partial_message(self.bot.data[guild.id]["message_radio_id"])
-			full_message = await message.fetch()
-			list_reaction: list = full_message.reactions
 
 			if member.voice is not None:
 				if (self.count >= 3) or (self.voice.is_playing() is False):
 					self.count = 0
-				if self.count == 0:
-					for react in list_reaction:
-						if (str(react.emoji) == self.bot.emoji_random_music) and (react.count >= 2):
-							async for user in react.users():
-								if user.bot is False:
-									await message.remove_reaction(self.bot.emoji_random_music, user) if (self.voice.is_playing()) is False else None
 				await guild.voice_client.disconnect() if (len(member.voice.channel.members) == 1) and (self.count == 2) else None
 				self.count += 1
-			else:
-				# Delete random function after logout of bot
-				for react in list_reaction:
-					if (str(react.emoji) == self.bot.emoji_random_music) and (react.count >= 2):
-						async for user in react.users():
-							if user.bot is False:
-								await message.remove_reaction(react.emoji, user)

@@ -1,3 +1,4 @@
+import discord
 from discord import Intents, utils, ActivityType, Activity, Status
 from discord.ext import commands
 from commands.help import Help
@@ -44,21 +45,18 @@ class Bot(commands.Bot):
 			self.data = json.load(f)
 			f.close()
 
-	async def change_activity(self, name, status):
-		act = Activity(type= ActivityType.listening, name= name, status= status)
-		await self.change_presence(activity= act)
+		self.add_all_cogs()
+
+	async def change_activity(self, name, status= 'dnd'):
+		act = Activity(type= ActivityType.listening, name= name)
+		await self.change_presence(activity= act, status= status)
 
 	def add_all_cogs(self):
 		for obj in [Radio(self), SetRadioCommand(self), PingCommand(self), Help(self)]:
 			self.add_cog(obj)
 
 	async def on_ready(self):
-		self.add_all_cogs()
-		await self.change_activity(f"nothing 😥 | {self.version}", Status.do_not_disturb)
 		print("[ ! Info ] Je suis prêt !\n=-----------------------=")
-
-	async def on_message(self, message):
-		await self.process_commands(message)
 
 	async def on_raw_reaction_add(self, event):
 		# Banner
