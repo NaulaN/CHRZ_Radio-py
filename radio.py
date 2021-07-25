@@ -20,15 +20,13 @@ class Radio(commands.Cog):
 		sources = FFmpegPCMAudio(f'{os.getcwd()}/Music/{music}')
 		return voice.play(sources)
 
-	@staticmethod
-	def start_loop(_loop):
-		if not _loop.is_running():
-			return _loop.start()
+	def start_loop(self):
+		if not self.change_musique_loop.is_running():
+			return self.change_musique_loop.start()
 
-	@staticmethod
-	def cancel_loop(_loop):
-		if not _loop.is_being_cancelled():
-			return _loop.stop()
+	def cancel_loop(self):
+		if not self.change_musique_loop.is_being_cancelled():
+			return self.change_musique_loop.stop()
 
 	def change_music(self, op: str):
 		self.all_voices[self.vocalChannel.id]["choice_musique"] += 1 if op == '+' else -1
@@ -43,7 +41,7 @@ class Radio(commands.Cog):
 			self.all_voices[self.vocalChannel.id]["joined"] = False
 			# Display "is not used"
 			await self.bot.change_activity(f"nothing 😥 | {self.bot.version}", Status.do_not_disturb)
-			self.cancel_loop(self.change_musique_loop)
+			self.cancel_loop()
 
 	async def join(self, event, message):
 		for member in self.vocalChannel.members:
@@ -59,7 +57,7 @@ class Radio(commands.Cog):
 		self.play_music(self.all_musics[random_choice], self.voice)
 		# Display "is used"
 		await self.bot.change_activity(f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}", Status.online)
-		self.start_loop(self.change_musique_loop)
+		self.start_loop()
 
 	async def next_music(self, event):
 		if str(event.emoji) == self.bot.emoji_next_music and (self.voice.is_playing()):
@@ -76,13 +74,14 @@ class Radio(commands.Cog):
 
 	async def stop_music(self, event):
 		if (str(event.emoji) == self.bot.emoji_stop_music) and (self.voice.is_playing()):
-			self.cancel_loop(self.change_musique_loop)
+			self.voice.stop()
+			self.cancel_loop()
 
 	async def resume_music(self, event):
 		# Restart the music where is been stopped
 		if (str(event.emoji) == self.bot.emoji_resume_music) and (not self.voice.is_playing()):
 			self.play_music(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]], self.voice)
-			self.start_loop(self.change_musique_loop)
+			self.start_loop()
 
 	async def set_random_music_selection(self, event):
 		# Set random selection of music
@@ -105,7 +104,6 @@ class Radio(commands.Cog):
 
 			# The bot join the vocal channel where is the user
 			await self.join(event, message) if str(event.emoji) == self.bot.emoji_add_bot else None
-
 			# If joined a vocal channel
 			if self.all_voices[self.vocalChannel.id]["joined"]:
 				await self.leave(event, guild)
@@ -114,7 +112,6 @@ class Radio(commands.Cog):
 				await self.stop_music(event)
 				await self.resume_music(event)
 				await self.set_random_music_selection(event)
-
 			# Remove after an action on reaction below of radio message
 			await message.remove_reaction(event.emoji, event.member) if str(event.emoji) not in [self.bot.emoji_random_music] else None
 
