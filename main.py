@@ -1,7 +1,6 @@
 from discord import Intents, utils, ActivityType, Activity, Status
 from discord.ext import commands
-
-from commands.help import HelpCommand
+from commands.help import Help
 from commands.ping import PingCommand
 from commands.set_radio import SetRadioCommand
 from radio import Radio
@@ -9,6 +8,7 @@ from radio import Radio
 import configparser, json, os
 
 
+# Permissions
 i = Intents.all()
 i.presences = True
 i.members = True
@@ -24,8 +24,7 @@ config.read( 'res/cfg.ini', encoding= 'UTF-8' )
 class Bot(commands.Bot):
 
 	def __init__(self):
-		help_command = HelpCommand(self)
-		commands.Bot.__init__(self, command_prefix= '.', intents= i, help_command= help_command.commands_list)
+		commands.Bot.__init__(self, command_prefix= '.', intents= i, help_command= None)
 
 		self.version = config["BOT"]["version"]
 
@@ -49,19 +48,13 @@ class Bot(commands.Bot):
 		act = Activity(type= ActivityType.listening, name= name, status= status)
 		await self.change_presence(activity= act)
 
+	def add_all_cogs(self):
+		for obj in [Radio(self), SetRadioCommand(self), PingCommand(self), Help(self)]:
+			self.add_cog(obj)
+
 	async def on_ready(self):
-		print("Je me lance, veuillez patientez...")
-
-		radio = Radio(self)
-		set_radio_command = SetRadioCommand(self)
-		ping_command = PingCommand(self)
-
-		self.add_cog(radio)
-		self.add_cog(set_radio_command)
-		self.add_cog(ping_command)
-
-		await self.change_activity(f"Musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.version}", Status.do_not_disturb)
-
+		self.add_all_cogs()
+		await self.change_activity(f"nothing 😥 | {self.version}", Status.do_not_disturb)
 		print("[ ! Info ] Je suis prêt !\n=-----------------------=")
 
 	async def on_message(self, message):
