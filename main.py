@@ -40,7 +40,7 @@ class Bot(commands.Bot):
 		self.count = 0
 		self.bot_id = 867406584316166145
 
-		__path = os.path.join( f'{os.getcwd()}/res/', 'guilds_data.json' )
+		__path = os.path.join(f'{os.getcwd()}/res/', 'guilds_data.json')
 		with open(__path) as f:
 			self.data = json.load(f)
 			f.close()
@@ -65,7 +65,7 @@ class Bot(commands.Bot):
 		print("[ ! Info ] Je suis prêt !\n=-----------------------=")
 
 	async def on_message(self, message):
-		await self.process_commands( message )
+		await self.process_commands(message)
 
 	async def on_raw_reaction_add(self, event):
 		# Banner
