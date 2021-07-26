@@ -1,30 +1,34 @@
-from discord import Intents, utils, ActivityType, Activity
+import os
+
+from discord import Intents,utils,ActivityType,Activity
 from discord.ext import commands
+
 from commands.help import Help
 from commands.ping import PingCommand
 from commands.set_radio import SetRadioCommand
+from file_manager import FileManager
 from radio import Radio
 
-import configparser, json, os
+
+def set_permissions():
+	perms = Intents.all()
+	perms.presences = True
+	perms.members = True
+	perms.messages = True
+	perms.guilds = True
+	perms.guild_messages = True
+	perms.reactions = True
+	return perms
 
 
-# Permissions
-i = Intents.all()
-i.presences = True
-i.members = True
-i.messages = True
-i.guilds = True
-i.guild_messages = True
-i.reactions = True
-
-config = configparser.ConfigParser()
-config.read( 'res/cfg.ini', encoding= 'UTF-8' )
+file_manager = FileManager()
+config = file_manager.load('cfg.ini',f'{os.getcwd()}/res/')
 
 
 class Bot(commands.Bot):
 
 	def __init__(self):
-		commands.Bot.__init__(self, command_prefix= '.', intents= i, help_command= None)
+		commands.Bot.__init__(self,command_prefix='.',intents=set_permissions(),help_command=None)
 
 		self.version = config["BOT"]["version"]
 
@@ -39,31 +43,28 @@ class Bot(commands.Bot):
 		self.count = 0
 		self.bot_id = 867406584316166145
 
-		__path = os.path.join(f'{os.getcwd()}/res/', 'guilds_data.json')
-		with open(__path) as f:
-			self.data = json.load(f)
-			f.close()
+		self.data = file_manager.load('guilds_data.json',f'{os.getcwd()}/res/')
 
 		self.add_all_cogs()
 
-	async def change_activity(self, name, status= 'dnd'):
-		act = Activity(type= ActivityType.listening, name= name)
-		await self.change_presence(activity= act, status= status)
+	async def change_activity(self,name,status='dnd'):
+		act = Activity(type=ActivityType.listening,name=name)
+		await self.change_presence(activity=act,status=status)
 
 	def add_all_cogs(self):
-		for obj in [Radio(self), SetRadioCommand(self), PingCommand(self), Help(self)]:
+		for obj in [Radio(self),SetRadioCommand(self),PingCommand(self),Help(self)]:
 			self.add_cog(obj)
 
 	async def on_ready(self):
 		print("[ ! Info ] Je suis prêt !\n=-----------------------=")
 
-	async def on_raw_reaction_add(self, event):
+	async def on_raw_reaction_add(self,event):
 		# Banner
 		if event.message_id == 867436601712705536:
-			guild = utils.get(self.guilds, id= event.guild_id)
-			textChannel = utils.get(guild.channels, id= event.channel_id)
+			guild = utils.get(self.guilds,id=event.guild_id)
+			textChannel = utils.get(guild.channels,id=event.channel_id)
 			message = textChannel.get_partial_message(event.message_id)
-			await message.remove_reaction(event.emoji, event.member)
+			await message.remove_reaction(event.emoji,event.member)
 
 
 bot = Bot()
