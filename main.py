@@ -59,7 +59,7 @@ class Bot(commands.Bot):
 		print("[ ! Info ] Je suis prêt !\n=-----------------------=")
 
 	async def on_raw_reaction_add(self,event):
-		# Banner
+		# Banner ( Dirty Code )
 		if event.message_id == 867436601712705536:
 			guild = utils.get(self.guilds,id=event.guild_id)
 			textChannel = utils.get(guild.channels,id=event.channel_id)

@@ -46,7 +46,7 @@ class Radio(commands.Cog):
 				await self.bot.change_activity(f"nothing | {self.bot.version}")
 				self.cancel_loop()
 				# leave vocal
-				self.all_voices[self.vocalChannel.id]["joined"] = False
+				self.all_voices.pop(self.vocalChannel.id)
 				return await guild.voice_client.disconnect()
 			# If the member is not proprietary of the bot
 			return await message.channel.send(embed=Embed(title="> ⚠ Attention !",description="Seul la personne qui ma fait rejoindre dans sont vocal pourra me deconnecté"),delete_after=self.delete_after)
@@ -63,6 +63,10 @@ class Radio(commands.Cog):
 				return await message.channel.send(embed=Embed(title="> ⚠ Attention !",description=f"Vous devez <#868456252685045760> pour pouvoir me prendre !"),delete_after=self.delete_after)
 			# Have channel but, the bot as been taken by an other vocal channel
 			return await message.channel.send(embed=Embed(title="> ⚠ Attention !",description=f"Le bot que vous vouliez prendre est déjà utilisé ! Attendez qu'il se libere ou rejoingnez le vocal <#{self.voice.channel.id}>"),delete_after=self.delete_after)
+		else:
+			# Have not a channel
+			if event.member.voice is None:
+				return await message.channel.send(embed=Embed(title="> ⚠ Attention !",description=f"Vous devez <#868456252685045760> pour pouvoir me prendre !"),delete_after=self.delete_after)
 		# If is not joined in a vocal channel
 		self.vocalChannel = utils.get(guild.voice_channels,id=event.member.voice.channel.id)
 		self.all_voices[self.vocalChannel.id] = self.template
