@@ -183,7 +183,12 @@ class Radio(commands.Cog):
 				self.all_voices[self.vocalChannel.id]["choice_musique"] = random.randint(0,len(self.all_musics) - 1)
 			self.sources = FFmpegPCMAudio(f'./Music/{self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]}')
 			self.voice.play(self.sources)
-			file, extensions = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
+			# [music_title, file_extension]
+			try:
+				file,extensions = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
+			# If other point if present in the music title
+			except ValueError:
+				file,extensions,*other = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
 			await self.bot.change_activity(file,'online')
 
 		self.all_voices[self.vocalChannel.id]["stopped"] = self.voice.is_paused()
@@ -195,14 +200,21 @@ class Radio(commands.Cog):
 		try:
 			self.all_voices[self.vocalChannel.id].items()
 		except (AttributeError, KeyError):
+			# If there are not music playing
 			await self.bot.change_activity(f"nothing | {self.bot.version}")
 		else:
 			if self.all_voices[self.vocalChannel.id]["joined"]:
-				file,extensions = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
-				name_act = [f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}",file]
+				# [music_title, file_extension]
+				try:
+					file,extensions = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
+				# If other point if present in the music title
+				except ValueError:
+					file,extensions,*other = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
+				# Names activities
+				names_act = [f"musics 𝘊𝘩𝘪𝘭𝘭 & 𝘓𝘰-𝘍𝘪 | {self.bot.version}",file]
 				if self.n >= 2:
 					self.n = 0
-				await self.bot.change_activity(name_act[self.n],'online')
+				await self.bot.change_activity(names_act[self.n],'online')
 				self.n += 1
 
 	@loop(minutes=1)
