@@ -183,7 +183,8 @@ class Radio(commands.Cog):
 				self.all_voices[self.vocalChannel.id]["choice_musique"] = random.randint(0,len(self.all_musics) - 1)
 			self.sources = FFmpegPCMAudio(f'./Music/{self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]}')
 			self.voice.play(self.sources)
-			await self.bot.change_activity(str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).removesuffix('.mp3'),'online')
+			file, extensions = str(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]]).split('.')
+			await self.bot.change_activity(file,'online')
 
 		self.all_voices[self.vocalChannel.id]["stopped"] = self.voice.is_paused()
 		self.all_voices[self.vocalChannel.id]["resume"] = self.voice.is_playing()
