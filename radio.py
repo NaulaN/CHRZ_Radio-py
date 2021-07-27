@@ -10,6 +10,7 @@ class Radio(commands.Cog):
 	all_voices = {}
 	all_musics = os.listdir(f'{os.getcwd()}/Music')
 	template = {"creator": None, "choice_musique": 0,"joined": False,"paused": False,"resume": True,"stopped": False,"random": False}
+	choice_random_musics = []
 	count = 0
 	delete_after = 15
 	n = 0
@@ -86,11 +87,20 @@ class Radio(commands.Cog):
 		""" next_music() -> Function for ⏭ Message reaction. """
 		if str(event.emoji) == self.bot.emoji_next_music and (self.voice.is_playing()):
 			if self.all_voices[self.vocalChannel.id]["creator"] == event.member.id:
+				# If 🔀 Reaction is not selected
 				if self.all_voices[self.vocalChannel.id]["random"] is False:
 					self.change_music('+')
+				# If the user have selected 🔀 Reaction
 				else:
-					self.all_voices[self.vocalChannel.id]["choice_musique"] = random.randint(0,len(self.all_musics) - 1)
+					# If the list have number
+					if len(self.choice_random_musics) != 0:
+						self.all_voices[self.vocalChannel.id]["choice_musique"] = random.choice(self.choice_random_musics)
+						self.choice_random_musics.pop(self.all_voices[self.vocalChannel.id]["choice_musique"])
+					# Recreate self.choice_random_musics list
+					else:
+						self.create_random_player()
 				return self.play_music(self.all_musics[self.all_voices[self.vocalChannel.id]["choice_musique"]],self.voice)
+			# If the user isn't taken the bot
 			return await message.channel.send(embed=Embed(title="> ⚠ Attention !",description=f"Vous ne pouvez pas changé de musique, que <@{self.all_voices[self.vocalChannel.id]['creator']}>, donc celui qui m'a fait rejoindre dans un vocal pourra changé la musique\n\n_demandez lui poliment de changé la musique_"),delete_after=self.delete_after)
 
 	async def back_music(self,event,message):
@@ -139,8 +149,14 @@ class Radio(commands.Cog):
 				await message.remove_reaction(event.emoji,event.member)
 				await message.channel.send(embed=Embed(title="> ⚠ Attention !",description=f"Vous ne pouvez pas enlevé le mode aléatoire, que <@{self.all_voices[self.vocalChannel.id]['creator']}>, donc celui qui m'a fait rejoindre dans un vocal pourra arrêté la musique\n\n_demandez lui poliment de enlevé le mode aléatoire la musique_"),delete_after=self.delete_after)
 
+	def create_random_player(self):
+		# Write numbers for random selection
+		for n in range(0, len(self.all_musics)-1):
+			self.choice_random_musics.append(n)
+
 	@commands.Cog.listener()
 	async def on_ready(self):
+		self.create_random_player()
 		await self.change_activity_music.start()
 
 	@commands.Cog.listener()
