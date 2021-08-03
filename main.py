@@ -3,11 +3,11 @@ import os
 from discord import Intents,utils,ActivityType,Activity
 from discord.ext import commands
 
-from commands.help import Help
-from commands.ping import PingCommand
-from commands.set_radio import SetRadioCommand
-from file_manager import FileManager
-from radio import Radio
+from src.commands.help import Help
+from src.commands.ping import PingCommand
+from src.commands.set_radio import SetRadioCommand
+from src.file_manager import FileManager
+from src.radio import Radio
 
 
 def set_permissions():
@@ -31,14 +31,16 @@ class Bot(commands.Bot):
 		commands.Bot.__init__(self,command_prefix='.',intents=set_permissions(),help_command=None)
 
 		self.version = config["BOT"]["version"]
-
 		self.emoji_next_music = config["RADIO"]["emoji_next_music"]
 		self.emoji_previous_music = config["RADIO"]["emoji_previous_music"]
 		self.emoji_resume_music = config["RADIO"]["emoji_resume_music"]
 		self.emoji_stop_music = config["RADIO"]["emoji_stop_music"]
 		self.emoji_add_bot = config["RADIO"]["emoji_add_bot"]
+		self.emoji_add_favorite = config["RADIO"]["emoji_add_favorite"]
 		self.emoji_remove_bot = config["RADIO"]["emoji_remove_bot"]
+		self.emoji_remove_favorite = config["RADIO"]["emoji_remove_favorite"]
 		self.emoji_random_music = config["RADIO"]["emoji_random_music"]
+		self.emoji_change_playlist = config["RADIO"]["emoji_change_playlist"]
 
 		self.count = 0
 		self.bot_id = 867406584316166145
@@ -59,7 +61,7 @@ class Bot(commands.Bot):
 		print("[ ! Info ] Je suis prêt !\n=-----------------------=")
 
 	async def on_raw_reaction_add(self,event):
-		# Banner ( Dirty Code )
+		# Banner (Dirty Code)
 		if event.message_id == 867436601712705536:
 			guild = utils.get(self.guilds,id=event.guild_id)
 			textChannel = utils.get(guild.channels,id=event.channel_id)
