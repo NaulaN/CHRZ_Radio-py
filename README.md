@@ -1,3 +1,2 @@
-# CHRZ_Radio_bot_discord
-
-###### **Musics bot** for https://discord.gg/yEvBg8CPaM server Discord
+# CHRZ_Radio
+Discord server: https://discord.gg/yEvBg8CPaM 
