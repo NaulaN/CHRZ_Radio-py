@@ -1,2 +1,2 @@
 # CHRZ_Radio
-Discord server: https://discord.gg/yEvBg8CPaM 
+French bot | Serveur Discord: _https://discord.gg/yEvBg8CPaM_
